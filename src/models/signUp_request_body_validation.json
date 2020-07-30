@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "title": "pk",
+      "type": "string",
+      "minLength": 1
+    },
+    "username": {
+      "title": "username",
+      "type": "string",
+      "minLength": 1
+    },
+    "password": {
+      "title": "password",
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": ["id", "username", "password"]
+}

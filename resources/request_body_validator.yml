@@ -1,0 +1,8 @@
+Resources:
+    RequestBodyValidator:
+       Type: AWS::ApiGateway::RequestValidator
+       Properties:
+              RestApiId:
+                    Ref: ApiGatewayRestApi
+              ValidateRequestBody: true
+              ValidateRequestParameters: false

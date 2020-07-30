@@ -1,0 +1,21 @@
+{
+  "name": "todos-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "aws-sdk": "^2.704.0",
+    "aws-sdk-mock": "^5.1.0",
+    "serverless-iam-roles-per-function": "^2.0.2",
+    "serverless-mocha-plugin": "^1.12.0",
+    "serverless-offline": "^6.4.0"
+  },
+  "dependencies": {
+    "serverless-pseudo-parameters": "^2.5.0"
+  }
+}

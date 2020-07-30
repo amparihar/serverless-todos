@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "title": "id",
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "title": "name",
+      "type": "string",
+      "minLength": 1
+    },
+    "groupId": {
+      "title": "group",
+      "type": "string",
+      "minLength": 1
+    },
+    "ownerId": {
+      "title": "owner",
+      "type": "string",
+      "minLength": 1
+    },
+    "isComplete": {
+      "title": "isComplete",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": ["id", "name", "groupId", "ownerId"]
+}

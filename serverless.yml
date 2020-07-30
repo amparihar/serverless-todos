@@ -1,0 +1,166 @@
+service: todos-api
+
+plugins:
+  - serverless-offline
+  - serverless-mocha-plugin
+  - serverless-pseudo-parameters
+  - serverless-iam-roles-per-function
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: ap-south-1
+  #profile: ${opt:profile, self:custom.defaultProfile}
+  environment:
+    DYNAMODB_USER_TABLE_NAME: ${self:custom.dynamodb.userTableName}
+    DYNAMODB_GROUP_TABLE_NAME: ${self:custom.dynamodb.groupTableName}
+    DYNAMODB_TASK_TABLE_NAME: ${self:custom.dynamodb.taskTableName}
+  
+functions:
+  deleteTask:
+    handler: src/functions/deleteTask.deleteTask
+    events:
+      - http:
+          path: /todos/v1/task/{id}
+          method: delete
+          cors: true
+          reqValidatorName: RequestParamsValidator
+          request:
+            parameters:
+              querystrings:
+                group: true
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:DeleteItem"
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.taskTableName}
+  deleteGroup:
+    handler: src/functions/deleteGroup.deleteGroup
+    events:
+      - http:
+          path: /todos/v1/group/{id}
+          method: delete
+          cors: true
+          reqValidatorName: RequestParamsValidator
+          request:
+            parameters:
+              querystrings:
+                owner: true
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:DeleteItem"
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.groupTableName}
+  signIn:
+    handler: src/functions/signIn.signIn
+    events:
+      - http:
+          path: /todos/v1/user/signin
+          method: post
+          cors: true
+          request:
+            schema:
+              application/json: ${file(src/models/signIn_request_body_validation.json)}
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:Query"
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTableName}
+        - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTableName}/index/username
+  listTask:
+    handler: src/functions/listTask.listTask
+    events:
+      - http:
+          path: /todos/v1/task/list/{group}
+          method: get
+          cors: true
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:Query"
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.taskTableName}
+    
+  listGroup:
+    handler: src/functions/listGroup.listGroup
+    events:
+      - http:
+          path: /todos/v1/group/list/{owner}
+          method: get
+          cors: true
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:Query"
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.groupTableName}
+    
+  saveTask:
+    handler: src/functions/saveTask.saveTask
+    events:
+      - http:
+          path: todos/v1/task
+          cors: true
+          method: post
+          request:
+            schema:
+              application/json: ${file(src/models/task_request_body_validation.json)}
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:PutItem"
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.taskTableName}
+  saveGroup:
+    handler: src/functions/saveGroup.saveGroup
+    events:
+      - http:
+          path: /todos/v1/group
+          cors: true
+          method: post
+          request:
+            schema:
+              application/json: ${file(src/models/group_request_body_validation.json)}
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:PutItem"
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.groupTableName}
+  signUp:
+    handler: src/functions/signUp.signUp
+    events:
+      - http:
+          path: /todos/v1/user
+          cors: true
+          method: post
+          request:
+            schema:
+              application/json: ${file(src/models/signUp_request_body_validation.json)}
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:Query"
+        - "dynamodb:PutItem"
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTableName}
+        - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTableName}/index/username
+
+custom:
+  defaultStage: dev
+  dynamodb:
+    userTableName: ${self:service}-user-${self:provider.stage}
+    groupTableName: ${self:service}-group-${self:provider.stage}
+    taskTableName: ${self:service}-task-${self:provider.stage}
+  serverless-mocha-plugin:
+    functionTemplate: templates/function-template.ejs
+    testTemplate: templates/test-template.ejs
+
+resources:
+  - ${file(resources/request_body_validator.yml)}
+  - ${file(resources/request_params_validator.yml)}
+  - ${file(resources/dynamodb_tables.yml)}
