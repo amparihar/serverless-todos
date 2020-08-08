@@ -2,6 +2,7 @@
 "use strict";
 const AWS = require("aws-sdk");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const processResponse = require("./process-response");
 
 module.exports.signIn = async (event, context) => {
@@ -34,11 +35,8 @@ module.exports.signIn = async (event, context) => {
         return processResponse(true, null, 404);
       }
       if (same) {
-        const token = {
-          uid: queryResponse.Items[0].id,
-          username: queryResponse.Items[0].username
-        };
-        return processResponse(true, token, 201);
+        const accessToken = jwt.sign({ uid: queryResponse.Items[0].id }, process.env.JWT_ACCESS_TOKEN);
+        return processResponse(true, { token: accessToken, username: queryResponse.Items[0].username }, 201);
       }
     })
   }

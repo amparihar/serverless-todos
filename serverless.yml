@@ -16,8 +16,10 @@ provider:
     DYNAMODB_USER_TABLE_NAME: ${self:custom.dynamodb.userTableName}
     DYNAMODB_GROUP_TABLE_NAME: ${self:custom.dynamodb.groupTableName}
     DYNAMODB_TASK_TABLE_NAME: ${self:custom.dynamodb.taskTableName}
-  
+    JWT_ACCESS_TOKEN: ${self:custom.jwttokens.accessToken}
 functions:
+  authenticate:
+    handler: src/functions/authenticate.authenticate
   deleteTask:
     handler: src/functions/deleteTask.deleteTask
     events:
@@ -156,6 +158,8 @@ custom:
     userTableName: ${self:service}-user-${self:provider.stage}
     groupTableName: ${self:service}-group-${self:provider.stage}
     taskTableName: ${self:service}-task-${self:provider.stage}
+  jwttokens:
+    accessToken: 6b1686cd653fb1b10cc3f0ac3423116b55b142ef603ea2d5234ca838d39a15ba43e84b6f79eb5390fa27a0c3805fc2a9dd1fcb4ffa47ceca5408e56ffbc19175
   serverless-mocha-plugin:
     functionTemplate: templates/function-template.ejs
     testTemplate: templates/test-template.ejs

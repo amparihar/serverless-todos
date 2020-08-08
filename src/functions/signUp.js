@@ -1,6 +1,7 @@
 "use strict";
 const AWS = require("aws-sdk");
 const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
 const processResponse = require("./process-response");
 
 module.exports.signUp = async (event, context) => {
@@ -15,7 +16,8 @@ module.exports.signUp = async (event, context) => {
     };
     const db = new AWS.DynamoDB.DocumentClient();
     const response = await db.put(params).promise();
-    return processResponse(true, { uid: params.Item.id, username: params.Item.username }, 201);
+    const accessToken = jwt.sign({uid: params.Item.id}, process.env.JWT_ACCESS_TOKEN);
+    return processResponse(true, { token: accessToken, username: params.Item.username }, 201);
   } catch (error) {
     console.log("There was an error while signUp");
     console.log("error", error);
