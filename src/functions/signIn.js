@@ -3,7 +3,7 @@
 const AWS = require("aws-sdk");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const processResponse = require("./process-response");
+const processResponse = require("../utils/process-response");
 
 module.exports.signIn = async (event, context) => {
   const requestBody = JSON.parse(event.body);
@@ -36,7 +36,7 @@ module.exports.signIn = async (event, context) => {
       }
       if (same) {
         const accessToken = jwt.sign({ uid: queryResponse.Items[0].id }, process.env.JWT_ACCESS_TOKEN);
-        return processResponse(true, { token: accessToken, username: queryResponse.Items[0].username }, 201);
+        return processResponse(true, { accessToken, username: queryResponse.Items[0].username }, 201);
       }
     })
   }

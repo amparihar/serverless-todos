@@ -1,6 +1,6 @@
 "use strict";
 const AWS = require("aws-sdk");
-const processResponse = require("./process-response");
+const processResponse = require("../utils/process-response");
 
 module.exports.saveTask = async (event, context) => {
   const requestBody = JSON.parse(event.body);

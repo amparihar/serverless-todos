@@ -1,13 +1,7 @@
 'use strict';
 
-module.exports.authenticate = async (event, context) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+const accessTokenPayload = require("../utils/accessTokenPayload");
 
-  return response;
+module.exports.authenticate = async (event, context) => {
+  return accessTokenPayload(event)
 };

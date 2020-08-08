@@ -1,6 +1,6 @@
 "use strict";
 const AWS = require("aws-sdk");
-const processResponse = require("./process-response");
+const processResponse = require("../utils/process-response");
 
 module.exports.listGroup = async (event, context) => {
   const ownerId = event.pathParameters.owner || "";
