@@ -16,6 +16,8 @@
     "serverless-offline": "^6.4.0"
   },
   "dependencies": {
+    "bcrypt": "^5.0.0",
+    "jsonwebtoken": "^8.5.1",
     "serverless-pseudo-parameters": "^2.5.0"
   }
 }

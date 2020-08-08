@@ -1,5 +1,7 @@
+
 "use strict";
 const AWS = require("aws-sdk");
+const bcrypt = require("bcrypt");
 const processResponse = require("./process-response");
 
 module.exports.signIn = async (event, context) => {
@@ -27,15 +29,18 @@ module.exports.signIn = async (event, context) => {
     queryResponse.Items &&
     queryResponse.Items.length === 1
   ) {
-    const passwordMatch =
-      queryResponse.Items[0].password === requestBody.password;
-    if (passwordMatch) {
-      const token = {
-        uid: queryResponse.Items[0].id,
-        username: queryResponse.Items[0].username
-      };
-      return processResponse(true, token, 201);
-    }
+    bcrypt.compare(requestBody.password, queryResponse.Items[0].password, (err, same) => {
+      if (err) {
+        return processResponse(true, null, 404);
+      }
+      if (same) {
+        const token = {
+          uid: queryResponse.Items[0].id,
+          username: queryResponse.Items[0].username
+        };
+        return processResponse(true, token, 201);
+      }
+    })
   }
   return processResponse(true, null, 404);
 };
