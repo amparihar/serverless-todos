@@ -1,6 +1,6 @@
 "use strict";
 const AWS = require("aws-sdk");
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const processResponse = require("../utils/process-response");
 
