@@ -19,7 +19,7 @@ module.exports.signIn = async (event, context) => {
     const db = new AWS.DynamoDB.DocumentClient();
     queryResponse = await db.query(params).promise();
   } catch (error) {
-    console.log("There was an error while signIn");
+    console.log("There was an error while user signIn");
     console.log("error", error);
     console.log("params", params.ExpressionAttributeValues);
     return processResponse(true, null, 500);
@@ -30,15 +30,17 @@ module.exports.signIn = async (event, context) => {
     queryResponse.Items &&
     queryResponse.Items.length === 1
   ) {
-    bcrypt.compare(requestBody.password, queryResponse.Items[0].password, (err, same) => {
-      if (err) {
-        return processResponse(true, null, 404);
-      }
-      if (same) {
+    try {
+      const passwordsEqual = await bcrypt.compare(requestBody.password, queryResponse.Items[0].password);
+      if (passwordsEqual) {
         const accessToken = jwt.sign({ uid: queryResponse.Items[0].id }, process.env.JWT_ACCESS_TOKEN);
-        return processResponse(true, { accessToken, username: queryResponse.Items[0].username }, 201);
+        return processResponse(true, { accessToken, username: queryResponse.Items[0].username }, 200);
       }
-    })
+    }
+    catch (bcryptCompareError) {
+      console.log("bcryptCompareError", bcryptCompareError);
+      return processResponse(true, null, 404);
+    }
   }
   return processResponse(true, null, 404);
 };
