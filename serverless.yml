@@ -28,6 +28,7 @@ functions:
           method: delete
           cors: true
           reqValidatorName: RequestParamsValidator
+          authorizer: authenticate
           request:
             parameters:
               querystrings:
@@ -46,6 +47,7 @@ functions:
           method: delete
           cors: true
           reqValidatorName: RequestParamsValidator
+          authorizer: authenticate
           request:
             parameters:
               querystrings:
@@ -80,6 +82,7 @@ functions:
           path: /todos/v1/task/list/{group}
           method: get
           cors: true
+          authorizer: authenticate
     iamRoleStatements:
     - Effect: Allow
       Action:
@@ -94,6 +97,7 @@ functions:
           path: /todos/v1/group/list/{owner}
           method: get
           cors: true
+          authorizer: authenticate
     iamRoleStatements:
     - Effect: Allow
       Action:
@@ -108,6 +112,7 @@ functions:
           path: todos/v1/task
           cors: true
           method: post
+          authorizer: authenticate
           request:
             schema:
               application/json: ${file(src/models/task_request_body_validation.json)}
@@ -124,6 +129,7 @@ functions:
           path: /todos/v1/group
           cors: true
           method: post
+          authorizer: authenticate
           request:
             schema:
               application/json: ${file(src/models/group_request_body_validation.json)}

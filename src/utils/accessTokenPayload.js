@@ -11,7 +11,7 @@ module.exports = (event) => {
     }
     var decodedToken = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
     if (decodedToken && decodedToken.uid && decodedToken.uid.length > 0){
-        return decodedToken.uid;
+        return decodedToken;
     }
     return null;
 
