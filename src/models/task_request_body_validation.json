@@ -28,5 +28,5 @@
       "default": false
     }
   },
-  "required": ["id", "name", "groupId", "ownerId"]
+  "required": ["id", "name", "groupId"]
 }

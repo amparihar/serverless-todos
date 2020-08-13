@@ -79,7 +79,7 @@ functions:
     handler: src/functions/listTask.listTask
     events:
       - http:
-          path: /todos/v1/task/list/{group}
+          path: /todos/v1/task/list
           method: get
           cors: true
           authorizer: authenticate

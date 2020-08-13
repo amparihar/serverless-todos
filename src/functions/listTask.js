@@ -3,12 +3,12 @@ const AWS = require("aws-sdk");
 const processResponse = require("../utils/process-response");
 
 module.exports.listTask = async (event, context) => {
-  const groupId = event.pathParameters.group || "";
+  const ownerId = event.requestContext.authorizer.uid;
   const params = {
     TableName: process.env.DYNAMODB_TASK_TABLE_NAME,
-    KeyConditionExpression: "groupId=:groupId",
+    KeyConditionExpression: "ownerId=:ownerId",
     ExpressionAttributeValues: {
-      ":groupId": groupId,
+      ":ownerId": ownerId
     },
   };
   try {
@@ -16,7 +16,7 @@ module.exports.listTask = async (event, context) => {
     const queryResponse = await db.query(params).promise();
     return processResponse(true, queryResponse.Items, 200);
   } catch (error) {
-    console.log("There was an error while querying user tasks");
+    console.log(`There was an error while querying tasks for ${ownerId}`);
     console.log("error", error);
     console.log("params", params.ExpressionAttributeValues);
     return processResponse(true, null, 500);

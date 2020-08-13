@@ -39,10 +39,10 @@ Resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
-          - AttributeName: groupId
+          - AttributeName: ownerId
             AttributeType: S
         KeySchema:
-          - AttributeName: groupId
+          - AttributeName: ownerId
             KeyType: HASH
           - AttributeName: id
             KeyType: RANGE
