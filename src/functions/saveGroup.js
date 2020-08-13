@@ -1,12 +1,13 @@
 "use strict";
 const AWS = require("aws-sdk");
 const processResponse = require("../utils/process-response");
+const accessTokenPayload = require("../utils/accessTokenPayload");
 
 module.exports.saveGroup = async (event, context) => {
   const requestBody = JSON.parse(event.body);
   const params = {
     TableName: process.env.DYNAMODB_GROUP_TABLE_NAME,
-    Item: requestBody,
+    Item: { ...requestBody, ownerId: accessTokenPayload.uid },
   };
 
   try {

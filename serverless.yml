@@ -94,7 +94,7 @@ functions:
     handler: src/functions/listGroup.listGroup
     events:
       - http:
-          path: /todos/v1/group/list/{owner}
+          path: /todos/v1/group/list
           method: get
           cors: true
           authorizer: authenticate

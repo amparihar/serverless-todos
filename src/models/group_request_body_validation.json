@@ -18,5 +18,5 @@
       "minLength": 1
     }
   },
-  "required": ["id", "name", "ownerId"]
+  "required": ["id", "name"]
 }
