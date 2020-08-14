@@ -159,7 +159,7 @@ functions:
         - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTableName}/index/username
 
 custom:
-  defaultStage: local
+  defaultStage: dev
   dynamodb:
     userTableName: ${self:service}-user-${self:provider.stage}
     groupTableName: ${self:service}-group-${self:provider.stage}
