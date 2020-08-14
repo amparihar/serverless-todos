@@ -8,13 +8,22 @@ module.exports.listTask = async (event, context) => {
     TableName: process.env.DYNAMODB_TASK_TABLE_NAME,
     KeyConditionExpression: "ownerId=:ownerId",
     ExpressionAttributeValues: {
-      ":ownerId": ownerId
+      ":ownerId": ownerId,
     },
   };
   try {
     const db = new AWS.DynamoDB.DocumentClient();
     const queryResponse = await db.query(params).promise();
-    return processResponse(true, queryResponse.Items, 200);
+    return processResponse(
+      true,
+      queryResponse.Items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        groupId: item.groupId,
+        isComplete: item.isComplete
+      })),
+      200
+    );
   } catch (error) {
     console.log(`There was an error while querying tasks for ${ownerId}`);
     console.log("error", error);

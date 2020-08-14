@@ -2,10 +2,10 @@
 
 const accessTokenPayload = require("../utils/accessTokenPayload");
 
-module.exports.authenticate = async (event, context) => {
+module.exports.handler = async (event, context) => {
   const decodedToken = accessTokenPayload(event);
   if (decodedToken) {
-    return generatePolicy(decodedToken.uid, "Allow", event.methodArn);
+    return generatePolicy(decodedToken.uid, "Allow", "*");
   }
   return generatePolicy(undefined, "Deny", event.methodArn);
 };
@@ -23,9 +23,11 @@ var generatePolicy = function (principalId, effect, resource) {
     statementOne.Resource = resource;
     policyDocument.Statement[0] = statementOne;
     authResponse.policyDocument = policyDocument;
+    if (effect === "Allow") {
+      authResponse.context = {
+        uid: principalId,
+      };
+    }
   }
-  authResponse.context = {
-    uid: principalId
-  };
   return authResponse;
 };

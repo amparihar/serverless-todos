@@ -19,7 +19,7 @@ provider:
     JWT_ACCESS_TOKEN: ${self:custom.jwttokens.accessToken}
 functions:
   authenticate:
-    handler: src/functions/authenticate.authenticate
+    handler: src/functions/authenticate.handler
   deleteTask:
     handler: src/functions/deleteTask.deleteTask
     events:
@@ -159,7 +159,7 @@ functions:
         - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTableName}/index/username
 
 custom:
-  defaultStage: dev
+  defaultStage: local
   dynamodb:
     userTableName: ${self:service}-user-${self:provider.stage}
     groupTableName: ${self:service}-group-${self:provider.stage}
