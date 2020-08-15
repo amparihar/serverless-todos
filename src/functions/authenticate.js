@@ -7,7 +7,7 @@ module.exports.handler = async (event, context) => {
   if (decodedToken) {
     return generatePolicy(decodedToken.uid, "Allow", "*");
   }
-  return generatePolicy(undefined, "Deny", event.methodArn);
+  return generatePolicy(undefined, "Deny", "*" /*event.methodArn*/);
 };
 
 var generatePolicy = function (principalId, effect, resource) {
