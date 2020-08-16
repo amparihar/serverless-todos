@@ -36,6 +36,13 @@ module.exports.signUp = async (event) => {
     console.log("There was an error while user signUp");
     console.log("error", error);
     console.log("params", params.Item);
+    if (error.name === "ConditionalCheckFailedException") {
+      return processErrorResponse({
+        ...error,
+        name: "ValidationException",
+        message: "User already exists.",
+      });
+    }
     return processErrorResponse(error);
   }
 };

@@ -52,7 +52,7 @@ module.exports.signIn = async (event, context) => {
   }
   return processErrorResponse({
     name: "AccessDeniedException",
-    message: "Please check the user & password and try again.",
+    message: "Please recheck the username & password and try again.",
     statusCode: 404,
   });
 };
