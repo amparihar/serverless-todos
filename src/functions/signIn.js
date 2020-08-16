@@ -50,5 +50,9 @@ module.exports.signIn = async (event, context) => {
       return processErrorResponse({ ...bcryptCompareError, statusCode: 404 });
     }
   }
-  return processErrorResponse({ statusCode: 404 });
+  return processErrorResponse({
+    name: "AccessDeniedException",
+    message: "Please check the user & password and try again.",
+    statusCode: 404,
+  });
 };
