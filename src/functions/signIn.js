@@ -1,9 +1,9 @@
-
 "use strict";
 const AWS = require("aws-sdk");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const processResponse = require("../utils/process-response");
+const processErrorResponse = require("../utils/process-error-response");
 
 module.exports.signIn = async (event, context) => {
   const requestBody = JSON.parse(event.body);
@@ -12,7 +12,7 @@ module.exports.signIn = async (event, context) => {
     KeyConditionExpression: "username=:username",
     ExpressionAttributeValues: {
       ":username": requestBody.username,
-    }
+    },
   };
   let queryResponse = {};
   try {
@@ -22,7 +22,7 @@ module.exports.signIn = async (event, context) => {
     console.log("There was an error while user signIn");
     console.log("error", error);
     console.log("params", params.ExpressionAttributeValues);
-    return processResponse(true, null, 500);
+    return processErrorResponse(error);
   }
 
   if (
@@ -31,16 +31,24 @@ module.exports.signIn = async (event, context) => {
     queryResponse.Items.length === 1
   ) {
     try {
-      const passwordsEqual = await bcrypt.compare(requestBody.password, queryResponse.Items[0].password);
+      const passwordsEqual = await bcrypt.compare(
+        requestBody.password,
+        queryResponse.Items[0].password
+      );
       if (passwordsEqual) {
-        const accessToken = jwt.sign({ uid: queryResponse.Items[0].id }, process.env.JWT_ACCESS_TOKEN);
-        return processResponse(true, { accessToken, username: queryResponse.Items[0].username }, 200);
+        const accessToken = jwt.sign(
+          { uid: queryResponse.Items[0].id },
+          process.env.JWT_ACCESS_TOKEN
+        );
+        return processResponse(
+          true,
+          { accessToken, username: queryResponse.Items[0].username },
+          200
+        );
       }
-    }
-    catch (bcryptCompareError) {
-      console.log("bcryptCompareError", bcryptCompareError);
-      return processResponse(true, null, 404);
+    } catch (bcryptCompareError) {
+      return processErrorResponse({ ...bcryptCompareError, statusCode: 404 });
     }
   }
-  return processResponse(true, null, 404);
+  return processErrorResponse({ statusCode: 404 });
 };

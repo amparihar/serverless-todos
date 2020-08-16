@@ -7,11 +7,6 @@ module.exports = (isCors, body, statusCode) => {
       "Access-Control-Allow-Credentials": true,
     });
   }
-  if (statusCode === 500) {
-    return {
-      statusCode: 500,
-    };
-  }
   return {
     statusCode: status,
     body: JSON.stringify(body) || "",

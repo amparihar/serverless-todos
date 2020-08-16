@@ -1,6 +1,7 @@
 "use strict";
 const AWS = require("aws-sdk");
 const processResponse = require("../utils/process-response");
+const processErrorResponse = require("../utils/process-error-response");
 
 module.exports.listGroup = async (event, context) => {
   const ownerId = event.requestContext.authorizer.uid;
@@ -23,6 +24,6 @@ module.exports.listGroup = async (event, context) => {
     console.log("There was an error while querying user groups");
     console.log("error=>", error);
     console.log("params=>", params.ExpressionAttributeValues);
-    return processResponse(true, null, 500);
+    return processErrorResponse(error);
   }
 };

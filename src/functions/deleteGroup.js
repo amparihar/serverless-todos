@@ -1,8 +1,9 @@
 'use strict';
 const AWS = require("aws-sdk");
 const processResponse = require("../utils/process-response");
+const processErrorResponse = require("../utils/process-error-response");
 
-module.exports.deleteGroup = async (event, context) => {
+module.exports.deleteGroup = async (event) => {
   const id = event.pathParameters.id || "";
   const ownerId = event.queryStringParameters.owner;
   const params = {
@@ -21,6 +22,6 @@ module.exports.deleteGroup = async (event, context) => {
     console.log("There was an error deleting the group");
     console.log("error", error);
     console.log("params", params.Key);
-    return processResponse(true, null, 500);
+    return processErrorResponse(error);
   }
 };

@@ -1,6 +1,7 @@
 "use strict";
 const AWS = require("aws-sdk");
 const processResponse = require("../utils/process-response");
+const processErrorResponse = require("../utils/process-error-response");
 
 module.exports.saveGroup = async (event, context) => {
   const ownerId = event.requestContext.authorizer.uid;
@@ -18,6 +19,6 @@ module.exports.saveGroup = async (event, context) => {
     console.log(`There was an error saving the group ${params.Item.name}`);
     console.log("error", error);
     console.log("params", params.Item);
-    return processResponse(true, null, 500);
+    return processErrorResponse(error);
   }
 };

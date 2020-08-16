@@ -1,6 +1,7 @@
 'use strict';
 const AWS = require("aws-sdk");
 const processResponse = require("../utils/process-response");
+const processErrorResponse = require("../utils/process-error-response");
 
 module.exports.deleteTask = async (event, context) => {
   const id = event.pathParameters.id || "";
@@ -21,6 +22,6 @@ module.exports.deleteTask = async (event, context) => {
     console.log("There was an error deleting the task");
     console.log("error", error);
     console.log("params", params.Key);
-    return processResponse(true, null, 500);
+    return processErrorResponse(error);
   }
 };
