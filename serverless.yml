@@ -1,11 +1,11 @@
 service: todos-api
 
 plugins:
-  - serverless-offline
   - serverless-mocha-plugin
   - serverless-pseudo-parameters
   - serverless-iam-roles-per-function
-
+  - serverless-add-api-key
+  - serverless-ssm-fetch
 provider:
   name: aws
   runtime: nodejs12.x
@@ -16,7 +16,6 @@ provider:
     DYNAMODB_USER_TABLE_NAME: ${self:custom.dynamodb.userTableName}
     DYNAMODB_GROUP_TABLE_NAME: ${self:custom.dynamodb.groupTableName}
     DYNAMODB_TASK_TABLE_NAME: ${self:custom.dynamodb.taskTableName}
-    JWT_ACCESS_TOKEN: ${self:custom.jwttokens.accessToken}
 functions:
   authenticate:
     handler: src/functions/authenticate.handler
@@ -24,9 +23,10 @@ functions:
     handler: src/functions/deleteTask.deleteTask
     events:
       - http:
-          path: /todos/v1/task/{id}
+          path: /api/v1/task/{id}
           method: delete
           cors: true
+          private: true
           reqValidatorName: RequestParamsValidator
           authorizer: authenticate
           request:
@@ -43,9 +43,10 @@ functions:
     handler: src/functions/deleteGroup.deleteGroup
     events:
       - http:
-          path: /todos/v1/group/{id}
+          path: /api/v1/group/{id}
           method: delete
           cors: true
+          private: true
           reqValidatorName: RequestParamsValidator
           authorizer: authenticate
           request:
@@ -62,9 +63,10 @@ functions:
     handler: src/functions/signIn.signIn
     events:
       - http:
-          path: /todos/v1/user/signin
+          path: /api/v1/user/signin
           method: post
           cors: true
+          private: true
           request:
             schema:
               application/json: ${file(src/models/signIn_request_body_validation.json)}
@@ -79,9 +81,10 @@ functions:
     handler: src/functions/listTask.listTask
     events:
       - http:
-          path: /todos/v1/task/list
+          path: /api/v1/task/list
           method: get
           cors: true
+          private: true
           authorizer: authenticate
     iamRoleStatements:
     - Effect: Allow
@@ -94,9 +97,10 @@ functions:
     handler: src/functions/listGroup.listGroup
     events:
       - http:
-          path: /todos/v1/group/list
+          path: /api/v1/group/list
           method: get
           cors: true
+          private: true
           authorizer: authenticate
     iamRoleStatements:
     - Effect: Allow
@@ -109,8 +113,9 @@ functions:
     handler: src/functions/saveTask.saveTask
     events:
       - http:
-          path: todos/v1/task
+          path: api/v1/task
           cors: true
+          private: true
           method: post
           authorizer: authenticate
           request:
@@ -126,8 +131,9 @@ functions:
     handler: src/functions/saveGroup.saveGroup
     events:
       - http:
-          path: /todos/v1/group
+          path: /api/v1/group
           cors: true
+          private: true
           method: post
           authorizer: authenticate
           request:
@@ -143,8 +149,9 @@ functions:
     handler: src/functions/signUp.signUp
     events:
       - http:
-          path: /todos/v1/user
+          path: /api/v1/user
           cors: true
+          private: true
           method: post
           request:
             schema:
@@ -159,17 +166,21 @@ functions:
         - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTableName}/index/username
 
 custom:
-  defaultStage: dev
+  defaultStage: prod
   dynamodb:
     userTableName: ${self:service}-user-${self:provider.stage}
     groupTableName: ${self:service}-group-${self:provider.stage}
     taskTableName: ${self:service}-task-${self:provider.stage}
-  jwttokens:
-    accessToken: 6b1686cd653fb1b10cc3f0ac3423116b55b142ef603ea2d5234ca838d39a15ba43e84b6f79eb5390fa27a0c3805fc2a9dd1fcb4ffa47ceca5408e56ffbc19175
+  
   serverless-mocha-plugin:
     functionTemplate: templates/function-template.ejs
     testTemplate: templates/test-template.ejs
+  apiKeys:
+    - name: ${self:service}-${self:provider.stage}-api-key
+  serverlessSsmFetch:
+    JWT_ACCESS_TOKEN: /serverless/todos/jwt/accessToken
 
+        
 resources:
   - ${file(resources/request_body_validator.yml)}
   - ${file(resources/request_params_validator.yml)}
