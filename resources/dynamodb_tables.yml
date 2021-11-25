@@ -1,7 +1,7 @@
 Resources:
     userTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         TableName: ${self:custom.dynamodb.userTableName}
         AttributeDefinitions:
@@ -15,7 +15,7 @@ Resources:
           WriteCapacityUnits: 1
     groupTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         TableName: ${self:custom.dynamodb.groupTableName}
         AttributeDefinitions:
@@ -33,7 +33,7 @@ Resources:
           WriteCapacityUnits: 1
     taskTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         TableName: ${self:custom.dynamodb.taskTableName}
         AttributeDefinitions:
