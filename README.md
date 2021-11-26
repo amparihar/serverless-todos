@@ -6,4 +6,4 @@ npm i
 serverless deploy -r <<REGION>> -s <<STAGE>>
 
 # Delete stack
-serverless remove
+serverless remove -r <<REGION>>
