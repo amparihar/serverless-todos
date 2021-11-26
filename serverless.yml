@@ -5,10 +5,10 @@ plugins:
   - serverless-pseudo-parameters
   - serverless-iam-roles-per-function
   - serverless-add-api-key
-  - serverless-ssm-fetch
+  # - serverless-ssm-fetch
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   stage: ${opt:stage, self:custom.defaultStage}
   region: ap-south-1
   #profile: ${opt:profile, self:custom.defaultProfile}
@@ -16,6 +16,7 @@ provider:
     DYNAMODB_USER_TABLE_NAME: ${self:custom.dynamodb.userTableName}
     DYNAMODB_GROUP_TABLE_NAME: ${self:custom.dynamodb.groupTableName}
     DYNAMODB_TASK_TABLE_NAME: ${self:custom.dynamodb.taskTableName}
+    JWT_ACCESS_TOKEN: ${self:custom.accessTokens.JWT_ACCESS_TOKEN} 
 functions:
   authenticate:
     handler: src/functions/authenticate.handler
@@ -164,6 +165,11 @@ functions:
       Resource:
         - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTableName}
         - arn:aws:dynamodb:${self:provider.region}:#{AWS::AccountId}:table/${self:custom.dynamodb.userTableName}/index/username
+resources:
+  - ${file(resources/request_body_validator.yml)}
+  - ${file(resources/request_params_validator.yml)}
+  - ${file(resources/dynamodb_tables.yml)}
+  - ${file(resources/ssm_parameter_store.yml)}
 
 custom:
   defaultStage: prod
@@ -171,17 +177,12 @@ custom:
     userTableName: ${self:service}-user-${self:provider.stage}
     groupTableName: ${self:service}-group-${self:provider.stage}
     taskTableName: ${self:service}-task-${self:provider.stage}
-  
+  accessTokens:
+    JWT_ACCESS_TOKEN: !GetAtt jwtAccessToken.token
   serverless-mocha-plugin:
     functionTemplate: templates/function-template.ejs
     testTemplate: templates/test-template.ejs
   apiKeys:
     - name: ${self:service}-${self:provider.stage}-api-key
-  serverlessSsmFetch:
-    JWT_ACCESS_TOKEN: /serverless/todos/jwt/accessToken
-
-        
-resources:
-  - ${file(resources/request_body_validator.yml)}
-  - ${file(resources/request_params_validator.yml)}
-  - ${file(resources/dynamodb_tables.yml)}
+  # serverlessSsmFetch:
+  #   JWT_ACCESS_TOKEN: /${self:provider.stage}/serverless/todos/jwt/accessToken
