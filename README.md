@@ -1,9 +1,13 @@
 MAC/ LINUX OS Install
 curl -o- -L https://slss.io/install | bash
 
+# close terminal
+# verify installation by "which sls"
+
 # Deploy stack
+cd serverless-todos
 npm i
-serverless deploy -r <<REGION>> -s <<STAGE>>
+sls deploy -r <<REGION>> -s <<STAGE>>
 
 # Delete stack
-serverless remove -r <<REGION>>
+sls remove -r <<REGION>>
