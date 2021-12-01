@@ -18,6 +18,14 @@ provider:
     DYNAMODB_TASK_TABLE_NAME: ${self:custom.dynamodb.taskTableName}
     JWT_ACCESS_TOKEN: ${self:custom.accessTokens.JWT_ACCESS_TOKEN} 
 functions:
+  ping:
+    handler: src/functions/ping.handler
+    events:
+      - http:
+          path: /api/v1/ping
+          cors: true
+          private: ${self:custom.apiKeyRequired}
+          method: get
   authenticate:
     handler: src/functions/authenticate.handler
   deleteTask:
@@ -27,7 +35,7 @@ functions:
           path: /api/v1/task/{id}
           method: delete
           cors: true
-          private: true
+          private: ${self:custom.apiKeyRequired}
           reqValidatorName: RequestParamsValidator
           authorizer: authenticate
           request:
@@ -47,7 +55,7 @@ functions:
           path: /api/v1/group/{id}
           method: delete
           cors: true
-          private: true
+          private: ${self:custom.apiKeyRequired}
           reqValidatorName: RequestParamsValidator
           authorizer: authenticate
           request:
@@ -67,7 +75,7 @@ functions:
           path: /api/v1/user/signin
           method: post
           cors: true
-          private: true
+          private: ${self:custom.apiKeyRequired}
           request:
             schema:
               application/json: ${file(src/models/signIn_request_body_validation.json)}
@@ -85,7 +93,7 @@ functions:
           path: /api/v1/task/list
           method: get
           cors: true
-          private: true
+          private: ${self:custom.apiKeyRequired}
           authorizer: authenticate
     iamRoleStatements:
     - Effect: Allow
@@ -101,7 +109,7 @@ functions:
           path: /api/v1/group/list
           method: get
           cors: true
-          private: true
+          private: ${self:custom.apiKeyRequired}
           authorizer: authenticate
     iamRoleStatements:
     - Effect: Allow
@@ -116,7 +124,7 @@ functions:
       - http:
           path: api/v1/task
           cors: true
-          private: true
+          private: ${self:custom.apiKeyRequired}
           method: post
           authorizer: authenticate
           request:
@@ -134,7 +142,7 @@ functions:
       - http:
           path: /api/v1/group
           cors: true
-          private: true
+          private: ${self:custom.apiKeyRequired}
           method: post
           authorizer: authenticate
           request:
@@ -152,7 +160,7 @@ functions:
       - http:
           path: /api/v1/user
           cors: true
-          private: true
+          private: ${self:custom.apiKeyRequired}
           method: post
           request:
             schema:
@@ -173,6 +181,7 @@ resources:
 
 custom:
   defaultStage: prod
+  apiKeyRequired: true
   dynamodb:
     userTableName: ${self:service}-user-${self:provider.stage}
     groupTableName: ${self:service}-group-${self:provider.stage}

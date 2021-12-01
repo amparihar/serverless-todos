@@ -1,4 +1,6 @@
-MAC/ LINUX OS Install
+Install Serverless
+
+MAC/ LINUX OS 
 curl -o- -L https://slss.io/install | bash
 
 # close terminal
